@@ -26,7 +26,7 @@ Here's an example:
       get :show, :id => @content.id
     end
 
-Calling `at_passport_control` on the instance ensures that the block is called when the record corresponding to `@content` gets instantiated by ActiveRecord, no matter what chain of methods is involved. In this example installing it installs mock method on instances of that record. But it could do anything.
+Calling `at_passport_control` on the instance ensures that the block is called when the record corresponding to `@content` gets instantiated by ActiveRecord, no matter what chain of methods is involved. In this example installing it installs mock method on instances of that record.
 
 Test Framework Integration
 --------------------------
@@ -41,5 +41,11 @@ To ensure that passport control mocks & stubs don't leak from one test to anothe
 
 A similar adapter should be easy enough to write for other frameworks.
 
+The Low Down
+------------
+
+Passport Control is specifically intended for use in writing tests **not** for use in production code.
+
+It works by replacing the `instantiate` method of ActiveRecord::Base with an augmented version that manages the per-instance callback list. Initial results suggest that this doesn't add a significant overhead during test runs but, given how often `instantiate` is going to get called during the lifetime of a real application, you don't want it in production.
 
 * I use [Shoulda](http://github.com/thoughtbot/shoulda/tree/master), [RR](http://github.com/btakita/rr/tree/master), and [Machinist](http://github.com/notahat/machinist/tree/master) for testing.
