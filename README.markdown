@@ -48,4 +48,7 @@ Passport Control is specifically intended for use in writing tests **not** for u
 
 It works by replacing the `instantiate` method of ActiveRecord::Base with an augmented version that manages the per-instance callback list. Initial results suggest that this doesn't add a significant overhead during test runs but, given how often `instantiate` is going to get called during the lifetime of a real application, you don't want it in production.
 
+Notes
+-----
+
 * I use [Shoulda](http://github.com/thoughtbot/shoulda/tree/master), [RR](http://github.com/btakita/rr/tree/master), and [Machinist](http://github.com/notahat/machinist/tree/master) for testing.
