@@ -24,8 +24,8 @@ module PassportControl
       base.extend( ClassMethods )
       
       base.instance_eval do
-        class_inheritable_accessor :wanted_list, :border_checks
-        self.border_checks = false
+        class_inheritable_accessor :passport_control_wanted_list, :passport_control_border_checks
+        self.passport_control_border_checks = false
         include InstanceMethods
       end
       
@@ -45,26 +45,26 @@ module PassportControl
       #
       def instantiate_with_passport_checking( record )
         instance = instantiate_without_passport_checking( record )
-        self.wanted_list[instance.id].each { |wanted| wanted.call( instance ) } if self.border_checks
+        self.passport_control_wanted_list[instance.id].each { |wanted| wanted.call( instance ) } if self.passport_control_border_checks
         instance
       end
       
       def clear_wanted_list
-        self.wanted_list.clear
+        self.passport_control_wanted_list.clear
       end
       
-      def border_check( id, &action )
+      def at_passport_control( id, &action )
         Border.register_class( self )
-        self.border_checks = true
-        self.wanted_list ||= Hash.new { [] }
-        self.wanted_list[id] = self.wanted_list[id] << action
+        self.passport_control_border_checks = true
+        self.passport_control_wanted_list ||= Hash.new { [] }
+        self.passport_control_wanted_list[id] = self.passport_control_wanted_list[id] << action
       end
       
     end
     
     module InstanceMethods
-      def border_check( &action )
-        self.class.border_check( id, &action )
+      def at_passport_control( &action )
+        self.class.at_passport_control( id, &action )
       end
     end
     
