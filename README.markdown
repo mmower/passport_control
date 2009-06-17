@@ -3,7 +3,7 @@ Passport Control
 
 Passport Control is a Rails plugin that augments ActiveRecord model classes with **per-record** callbacks. The intended purpose is to allow mocking & stubbing  in tests on a per-record, rather than per-instance, basis.
 
-Here is a typical example (*)
+Here is a typical example of mocking a method in a test setup: (*)
 
     setup do
       @user = User.make
@@ -11,11 +11,13 @@ Here is a typical example (*)
       mock( @content ).foo { "foo!" }
     end
 
-Setting up a mock works fine in a context where you can pass your mocked `@content` instance directly into your test (e.g. a unit test). But this becomes more complicated when your test is not responsible for directly providing the object you need to mock. For example controller methods usually take the id of a record and look it up using `find` and friends. Calls to `find` returns the same record but a different instance so your mock doesn't work. 
+Setting up a mock in this way works fine in a context where you can pass your mocked `@content` instance directly into your test (e.g. a unit test). But this becomes more complicated when your test is not responsible for directly providing the object you need to mock.
 
-Typically to work around this you must either resort to `any_instance` (if it's available to you), or to stubbing your model class itself to ensure your pre-mocked instance is returned by `find`. This can get messy in cases where you access this instance via an association.
+For example controller methods usually take the id of a record and look up an instance using `find` and friends. Calls to `find` returns the same record but a different instance to the one your mock method is installed on.
 
-Maybe you've wished you could simply tell Rails "Look, just mock method #foo of record 13 wherever it comes from" instead? That's where Passport Control comes in.
+Typical work arounds to this problem involve either `any_instance` (if it's available to you), or stubbing your model class to ensure your pre-mocked instance is returned by `find`. This can get messy, especially where associations are involved.
+
+Maybe you've wished you could simply tell Rails "Look, just mock method #foo of record 13 wherever it comes from"? That's where Passport Control comes in.
 
 Here's an example:
 
@@ -26,7 +28,7 @@ Here's an example:
       get :show, :id => @content.id
     end
 
-Calling `at_passport_control` on the instance ensures that the block is called when the record corresponding to `@content` gets instantiated by ActiveRecord, no matter what chain of methods is involved. This example mocks the method `#foo` of any instance of that particular record.
+Calling `at_passport_control` on the instance ensures that the block is called when the record corresponding to `@content` gets instantiated by ActiveRecord, no matter what chain of methods is involved. This example ensures that when the controller method `#show` looks up the record given it's id that the returned instance correctly mocks the method `#foo`.
 
 Test Framework Integration
 --------------------------
