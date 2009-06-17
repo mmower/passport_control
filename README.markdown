@@ -50,6 +50,8 @@ Passport Control is specifically intended for use in writing tests **not** for u
 
 It works by replacing the `instantiate` method of ActiveRecord::Base with an augmented version that manages the per-class/per-id callback lists. Initial results suggest that this doesn't add a significant overhead during test runs but, given how often `instantiate` is going to get called during the lifetime of a real application, you don't want it in production.
 
+Also monkeypatching such a fundamental ActiveRecord method is surely evil and angry villagers with torches and pitchforks will be involved somehow. You have been warned!
+
 Notes
 -----
 
