@@ -11,8 +11,7 @@ The intended purpose is to allow mocking & stubbing instances in tests on a reco
       mock( @content ).foo { "foo!" }
     end
 
-Works in a context where you pass `@content` into your test (e.g. a unit test) but does not work where the code under test
-retrieves the object itself using `find` and friends.
+Works in a context where you pass `@content` into your test (e.g. a unit test) but does not work where the code under test retrieves the object itself using `find` and friends. I keep running into this with controller methods.
 
 Typically you must resort to `any_instance` (if available) or mocking your model class itself to ensure your pre-mocked instnace is returned by `find` which gets awkward in cases where you access this instance via other instances or collections. Maybe you've wished you could tell Rails "Mock method #foo of record 13" instead? That's where Passport Control comes in.
 
@@ -21,7 +20,8 @@ Here's an example:
     setup do
       @user = User.make
       @content = @user.contents.make
-      @content.border_check { |content| mock( content ).foo { "foo!" }
+      @content.at_passport_control { |content| mock( content ).foo { "foo!" }
+      get :show, :id => @content.id
     end
 
 This will ensure that when the record corresponding to `@content` gets instantiated by ActiveRecord, no matter what chain of methods is involved, that the mock will be put in place.
