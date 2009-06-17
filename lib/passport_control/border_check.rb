@@ -26,6 +26,7 @@ module PassportControl
       base.instance_eval do
         class_inheritable_accessor :wanted_list, :border_checks
         self.border_checks = false
+        include InstanceMethods
       end
       
       class << base
@@ -52,11 +53,18 @@ module PassportControl
         self.wanted_list.clear
       end
       
-      def on_entry( id, &action )
+      def border_check( id, &action )
         Border.register_class( self )
         self.border_checks = true
         self.wanted_list ||= Hash.new { [] }
         self.wanted_list[id] = self.wanted_list[id] << action
+      end
+      
+    end
+    
+    module InstanceMethods
+      def border_check( &action )
+        self.class.border_check( id, &action )
       end
     end
     
